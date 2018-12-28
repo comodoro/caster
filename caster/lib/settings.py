@@ -218,6 +218,13 @@ _DEFAULT_SETTINGS = {
         "legion_vertical_columns": 30,
         "use_aenea": False,
     },
+    "logging": {
+        "text": False,
+        "window": False,
+        "dragonfly": {
+            
+        }
+    },
     "pronunciations": {
         "c++": "C plus plus",
         "jquery": "J query",

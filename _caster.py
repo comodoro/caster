@@ -5,9 +5,10 @@ Created on Jun 29, 2014
 '''
 
 import logging
-logging.basicConfig()
-
+import logging.handlers
+import subprocess
 import time
+
 from dragonfly import (Function, Grammar, Playback, Dictation, Choice, Pause)
 from caster.lib.ccr.standard import SymbolSpecs
 
@@ -24,6 +25,7 @@ def _wait_for_wsr_activation():
             count += 1
             time.sleep(1)
 
+logger = logging.getLogger(__name__)
 
 _NEXUS = None
 
@@ -166,6 +168,25 @@ grammar.load()
 
 _NEXUS.merger.update_config()
 _NEXUS.merger.merge(MergeInf.BOOT)
+
+if settings.SETTINGS["logging"]["text"]:
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.DEBUG)
+if settings.SETTINGS["logging"]["window"]:
+    socketHandler = logging.handlers.SocketHandler('localhost',
+            logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+    debug = settings.SETTINGS["paths"]["BASE_PATH"] + "/lib/log_window.py"
+    print(str(debug))
+    subprocess.Popen([settings.SETTINGS["paths"]["PYTHONW"], debug])
+    time.sleep(5)
+dflogs = settings.SETTINGS["logging"]["dragonfly"]
+if dflogs:
+    from dragonfly import log
+    log.setup_log()
+    for logger_name in dflogs:
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(dflogs[logger_name])
+        logger.addHandler(socketHandler)
 
 print("*- Starting " + settings.SOFTWARE_NAME + " -*")
 
