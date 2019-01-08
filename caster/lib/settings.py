@@ -219,10 +219,13 @@ _DEFAULT_SETTINGS = {
         "use_aenea": False,
     },
     "logging": {
-        "text": False,
+        "text": "CRITICAL",
         "window": False,
         "dragonfly": {
             
+        },
+        "modules": {
+
         }
     },
     "pronunciations": {

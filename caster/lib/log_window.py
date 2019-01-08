@@ -115,6 +115,7 @@ class TextWindow(object):
     def exit(self):
         self.sock.close()
         self.stext.quit()
+        sys.exit(0)
 
 def run():
     print('Running log window')

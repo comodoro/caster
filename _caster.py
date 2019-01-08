@@ -14,7 +14,7 @@ import sys
 
 from dragonfly import (Function, Grammar, Playback, Dictation, Choice, Pause,
                WaitWindow, log)
-from caster.lib import settings  # requires nothing
+from caster.lib import settings
 
 
 def _wait_for_wsr_activation():
@@ -31,24 +31,32 @@ def _wait_for_wsr_activation():
 
 logger = logging.getLogger(__name__)
 start_time = datetime.datetime.now()
-if settings.SETTINGS["logging"]["text"]:
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.StreamHandler(stream=sys.stderr))
+text_handler = logging.StreamHandler(stream=sys.stderr)
+text_handler.setLevel(settings.SETTINGS["logging"]["text"])
+logger.addHandler(text_handler)
 if settings.SETTINGS["logging"]["window"]:
     socketHandler = logging.handlers.SocketHandler('localhost',
             logging.handlers.DEFAULT_TCP_LOGGING_PORT)
     socketHandler.setLevel(logging.DEBUG)
     debug = settings.SETTINGS["paths"]["BASE_PATH"] + "/lib/log_window.py"
-    subprocess.Popen([settings.SETTINGS["paths"]["PYTHONW"], debug])
+    subprocess.Popen(["py", "-2", debug])
     WaitWindow(title="Caster logging").execute()
     logger.addHandler(socketHandler)
     dflogs = settings.SETTINGS["logging"]["dragonfly"]
     if dflogs:
-        log.setup_log()
+        if "defaults" in dflogs and dflogs["defaults"]:
+            log.setup_log()
         for logger_name in dflogs:
-            dflogger = logging.getLogger(logger_name)
-            dflogger.setLevel(dflogs[logger_name])
-            dflogger.addHandler(socketHandler)
+            if logger_name in log.default_levels.keys():
+                dflogger = logging.getLogger(logger_name)
+                dflogger.setLevel(dflogs[logger_name])
+                dflogger.addHandler(socketHandler)
+    module_logs = settings.SETTINGS["logging"]["modules"]
+    if module_logs:
+        for logger_name in module_logs:
+            module_logger = logging.getLogger(logger_name)
+            module_logger.setLevel(dflogs[logger_name])
+            module_logger.addHandler(socketHandler)
 logger.propagate = False
 logger.info('Initialized logging in %s' % str(datetime.datetime.now() - start_time))
 start_time = datetime.datetime.now()
