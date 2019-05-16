@@ -15,6 +15,7 @@ matrix:
         - python -m pip install --upgrade pip wheel
       install:
         - pip install -U -r requirements-dev.txt
+        - pip install -e .
       script:
         - python castervoice/lib/tests/testrunner.py
         - pylint -E castervoice
