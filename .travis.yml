@@ -15,3 +15,4 @@ install:
 
 script:
   - python castervoice/lib/tests/testrunner.py
+  - pylint -E
