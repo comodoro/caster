@@ -33,6 +33,11 @@ class new_install(install, object):
         atexit.register(_post_install)
 
 
+class dev_install(install, object):
+    def __init__(self, *args, **kwargs):
+        super(dev_install, self).__init__(*args, **kwargs)
+
+
 with open("ReadMe.md", "r") as fh:
     long_description = fh.read()
 
@@ -59,6 +64,7 @@ setuptools.setup(
         "toml>=0.10.0",
         "future"
     ],
-    cmdclass={'install': new_install
+    cmdclass={'install': new_install,
+              'develop': dev_install,
               },
 )
