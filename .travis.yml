@@ -15,7 +15,7 @@ matrix:
         - python -m pip install --upgrade pip wheel
       install:
         - pip install -U -r requirements-dev.txt
-        - travis_wait 30 pip install .
+        - pip install -vvv .
       script:
         - python castervoice/lib/tests/testrunner.py
         - pylint -E castervoice
