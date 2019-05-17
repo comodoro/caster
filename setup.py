@@ -4,6 +4,8 @@ import codecs
 import re
 import atexit
 from setuptools.command.install import install
+from setuptools.command.develop import develop
+
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,16 +29,15 @@ def _post_install():
     runpostinstall()
 
 
-class new_install(install, object):
-    def __init__(self, *args, **kwargs):
-        super(new_install, self).__init__(*args, **kwargs)
+class new_install(install):
+    def run(self):
         atexit.register(_post_install)
+        install.run(self)
 
 
-class dev_install(install, object):
-    def __init__(self, *args, **kwargs):
-        super(dev_install, self).__init__(*args, **kwargs)
-
+class dev_install(develop):
+    def run(self):
+        develop.run(self)
 
 with open("ReadMe.md", "r") as fh:
     long_description = fh.read()
