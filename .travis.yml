@@ -15,7 +15,7 @@ matrix:
         - pip install -U -r requirements-dev.txt
         - pip install -vvv --user -e .
       script:
-        - cmd /c 'python castervoice/lib/tests/testrunner.py'
+        - cmd /c "python castervoice/lib/tests/testrunner.py"
         - pylint -E _caster.py        
         - pylint -E castervoice
 deploy:
