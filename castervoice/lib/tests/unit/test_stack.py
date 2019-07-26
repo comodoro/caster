@@ -18,7 +18,8 @@ class TestStack(TestNexus):
         TestNexus.setUp(self)
 
     def test_cancel(self):
-        assert 0 == 1
+        if False:
+            import blah
         mutable_integer = {"value": 0}
 
         def increment():
