@@ -18,7 +18,6 @@ class TestStack(TestNexus):
         TestNexus.setUp(self)
 
     def test_cancel(self):
-        assert 0 == 1
         mutable_integer = {"value": 0}
 
         def increment():

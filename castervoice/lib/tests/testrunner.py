@@ -16,4 +16,5 @@ def run_tests():
     return result
 
 if __name__ == '__main__':
-    sys.exit(len(run_tests().failures))
+    result = run_tests()
+    sys.exit(len(result.failures) + len(result.errors) + len(result.unexpectedSuccesses))
