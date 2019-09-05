@@ -8,8 +8,7 @@ from dragonfly.actions.action_mimic import Mimic
 from castervoice.lib.ccr.standard import SymbolSpecs
 from castervoice.lib.ccr.core.punctuation import text_punc_dict, double_text_punc_dict
 from castervoice.lib.alphanumeric import caster_alphabet
-
-
+from castervoice.lib.dfplus.state.actions import AsynchronousAction, ContextSeeker
 _NEXUS = control.nexus()
 
 for key, value in double_text_punc_dict.items():
@@ -18,7 +17,7 @@ for key, value in double_text_punc_dict.items():
     elif len(value) == 4:
         double_text_punc_dict[key] = value[0:1] + "~" + value[2:3]
     else:
-        raise Exception("Need to deal with nonstandard pair length in double_text_punc_dict.")
+        raise Exception("Need to deal with nonstandard pair length in double_text_punc_dict: {}".format(value))
 
 class NavigationNon(MergeRule): 
     mapping = {
@@ -111,19 +110,19 @@ class NavigationNon(MergeRule):
             R(Key("wc-d")),
         "close work [space]":
             R(Key("wc-f4")),
-        "close all work [spaces]":
-            R(Function(utilities.close_all_workspaces)),
+        # "close all work [spaces]":
+        #     R(Function(utilities.close_all_workspaces)),
         "next work [space] [<n>]":
             R(Key("wc-right"))*Repeat(extra="n"),
         "(previous | prior) work [space] [<n>]":
             R(Key("wc-left"))*Repeat(extra="n"),
 
-        "go work [space] <n>":
-            R(Function(lambda n: utilities.go_to_desktop_number(n))),
-        "send work [space] <n>":
-            R(Function(lambda n: utilities.move_current_window_to_desktop(n))),
-        "move work [space] <n>":
-            R(Function(lambda n: utilities.move_current_window_to_desktop(n, True))),
+        # "go work [space] <n>":
+        #     R(Function(lambda n: utilities.go_to_desktop_number(n))),
+        # "send work [space] <n>":
+        #     R(Function(lambda n: utilities.move_current_window_to_desktop(n))),
+        # "move work [space] <n>":
+        #     R(Function(lambda n: utilities.move_current_window_to_desktop(n, True))),
     }
 
     extras = [

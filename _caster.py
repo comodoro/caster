@@ -4,36 +4,48 @@ main Caster module
 Created on Jun 29, 2014
 '''
 
-import os, time, sys
+import datetime, os, time, sys
+start_time = datetime.datetime.now()
+from castervoice.lib import settings  # requires nothing
+print("\n*- Starting " + settings.SOFTWARE_NAME + " -*")
+
 import logging
 logging.basicConfig()
 
+from dragonfly import get_engine
+engine = get_engine("kaldi",
+    model_dir='kaldi_model_zamia',
+    # tmp_dir='kaldi_tmp',  # default for temporary directory
+    # vad_aggressiveness=3,  # default aggressiveness of VAD
+    # vad_padding_ms=300,  # default ms of required silence surrounding VAD
+    # input_device_index=None,  # set to an int to choose a non-default microphone
+    auto_add_to_user_lexicon=True,  # set to True to possibly use cloud for pronunciations
+    # cloud_dictation=None,  # set to 'gcloud' to use cloud dictation
+)
+
+# Call connect() now that the engine configuration is set.
+engine.connect()
 import time, socket, os
-from dragonfly import (get_engine, Function, Grammar, Playback, Dictation, Choice, Pause,
-                       RunCommand)
+from dragonfly import Function, Grammar, Playback, Dictation, Choice, Pause, RunCommand
 from castervoice.lib.ccr.standard import SymbolSpecs
 
 _NEXUS = None
-from castervoice.lib import settings  # requires nothing
-if settings.SYSTEM_INFORMATION["platform"] != "win32":
-    raise SystemError("Your platform is not currently supported by Caster.")
+
 settings.WSR = __name__ == "__main__"
 from castervoice.lib import utilities  # requires settings
 if settings.WSR:
     SymbolSpecs.set_cancel_word("escape")
 from castervoice.lib import control
 _NEXUS = control.nexus()
-_NEXUS.dep.initialize()
 from castervoice.lib.ctrl.dependencies import find_pip, update
 from castervoice.lib import navigation
 navigation.initialize_clipboard(_NEXUS)
 
 from castervoice.apps import __init__
-from castervoice.asynch import *
 from castervoice.lib.ccr import *
-from castervoice.lib.ccr.recording import bringme, again, alias, history
-import castervoice.lib.dev.dev
-from castervoice.asynch.sikuli import sikuli
+from castervoice.lib.ccr.recording import bringme, again, history
+# import castervoice.lib.dev.dev
+# from castervoice.asynch.sikuli import sikuli
 
 from castervoice.lib.actions import Key
 from castervoice.lib.terminal import TerminalCommand
@@ -49,26 +61,11 @@ if not globals().has_key('profile_switch_occurred'):
     _NEXUS.merger.merge(MergeInf.BOOT)
 
 
-class DependencyUpdate(RunCommand):
-    synchronous = True
-
-    # pylint: disable=method-hidden
-    def process_command(self, proc):
-        # Process the output from the command.
-        RunCommand.process_command(self, proc)
-        # Only reboot dragon if the command was successful and online_mode is true
-        # 'pip install ...' may exit successfully even if there were connection errors.
-        if proc.wait() == 0 and update:
-            Playback([(["reboot", "dragon"], 0.0)]).execute()
-
-
 def change_monitor():
     if settings.SETTINGS["sikuli"]["enabled"]:
         Playback([(["monitor", "select"], 0.0)]).execute()
     else:
         print("This command requires SikuliX to be enabled in the settings file")
-
-pip = find_pip()
 
 class MainRule(MergeRule):
     @staticmethod
@@ -88,10 +85,10 @@ class MainRule(MergeRule):
 
     mapping = {
         # update management
-        "update caster":
-            R(DependencyUpdate([pip, "install", "--upgrade", "castervoice"])),
-        "update dragonfly":
-            R(DependencyUpdate([pip, "install", "--upgrade", "dragonfly2"])),
+        # "update caster":
+        #     R(DependencyUpdate([pip, "install", "--upgrade", "castervoice"])),
+        # "update dragonfly":
+        #     R(DependencyUpdate([pip, "install", "--upgrade", "dragonfly2"])),
 
         # hardware management
         "volume <volume_mode> [<n>]":
@@ -150,14 +147,15 @@ class MainRule(MergeRule):
 
 control.non_ccr_app_rule(MainRule(), context=None, rdp=False)
 
-if globals().has_key('profile_switch_occurred'):
-    reload(sikuli)
-else:
-    profile_switch_occurred = None
+# if globals().has_key('profile_switch_occurred'):
+#     reload(sikuli)
+# else:
+#     profile_switch_occurred = None
 
-print("\n*- Starting " + settings.SOFTWARE_NAME + " -*")
-
+print("Startup time {}".format(datetime.datetime.now() - start_time))
 if settings.WSR:
-    print("Windows Speech Recognition is garbage; it is " \
-        +"recommended that you not run Caster this way. ")
-    get_engine().recognize_forever()
+    try:
+        # Loop forever
+        engine.do_recognition()
+    except KeyboardInterrupt:
+        pass

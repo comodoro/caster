@@ -7,7 +7,6 @@ import io
 import os
 import sys
 import toml
-import _winreg
 import version
 import errno
 

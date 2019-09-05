@@ -4,7 +4,6 @@ from castervoice.lib.imports import *
 '''
 
 from dragonfly import *
-from dragonfly.actions.action_mouse import get_cursor_position
 
 from castervoice.lib import context, navigation, alphanumeric, textformat, text_utils, settings
 from castervoice.lib import control, utilities, text_manipulation_functions
@@ -19,8 +18,6 @@ from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.merge.selfmodrule import SelfModifyingRule
 
-from castervoice.lib.dfplus.state.actions import AsynchronousAction, ContextSeeker
-from castervoice.lib.dfplus.state.actions2 import UntilCancelled, NullAction, BoxAction, ConfirmAction
 from castervoice.lib.dfplus.state.short import L, S, R
 
 from castervoice.lib.ccr.standard import SymbolSpecs

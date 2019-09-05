@@ -4,13 +4,12 @@ master_text_nav shouldn't take strings as arguments - it should take ints, so it
 '''
 
 import time
-from ctypes import windll
+
 from subprocess import Popen
 
 
 import dragonfly
-from dragonfly import Choice, monitors, Pause
-from castervoice.asynch.mouse.legion import LegionScanner
+from dragonfly import Choice, monitors, Mouse, Pause
 from castervoice.lib import control, settings, utilities, textformat
 from castervoice.lib.actions import Key, Text, Mouse
 from castervoice.lib.clipboard import Clipboard
@@ -173,7 +172,6 @@ def kill_grids_and_wait(nexus):
 
 
 def mouse_click(nexus, button):
-    kill_grids_and_wait(nexus)
     Mouse(button).execute()
 
 
